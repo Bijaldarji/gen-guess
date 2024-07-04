@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request
+# app.py
+
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
@@ -10,9 +12,10 @@ female_words = ["fashion", "shopping", "beauty", "love", "family", "recipe", "cu
 def home():
     return render_template('index.html')
 
-@app.route('/predict', methods=['POST'])
+@app.route('/api/predict', methods=['POST'])
 def predict():
-    text = request.form['text']
+    data = request.get_json()
+    text = data['text']
     text_words = text.lower().split()
     
     male_score = sum(word in text_words for word in male_words)
@@ -25,7 +28,7 @@ def predict():
     else:
         prediction = "Unknown"
 
-    return render_template('result.html', prediction=prediction, trained=True)
+    return jsonify({'prediction': prediction, 'trained': True})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(debug=True)
